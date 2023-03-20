@@ -24,7 +24,11 @@
 		pointLight.castShadow = castShadow;
 	}
 
-	onDestroy(() => parentContext?.remove(pointLight));
+	onDestroy(() => {
+		parentContext?.remove(pointLight);
+
+		console.log('>>>>>>>>>>>>>>>>>>>> REMOVED', pointLight);
+	});
 </script>
 
 <slot />

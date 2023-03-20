@@ -9,7 +9,7 @@
 	const ambient = new THREE.AmbientLight(colour, intensity);
 
 	const parentContext = getContext<ParentContext>(parentContextkey);
-	parentContext.parent.add(ambient);
+	parentContext.add(ambient);
 
 	// Set new parent context for child elements
 	setContext(parentContextkey, new ParentContext(ambient));

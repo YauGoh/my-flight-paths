@@ -1,50 +1,46 @@
-import type * as THREE from "three";
-import type { Size2d } from "../models/size";
+import type * as THREE from 'three';
+import type { Size2d } from '../models/size';
 
-export const key: string = "SceneContext";
+export const key: string = 'SceneContext';
 
-type onSizeChanged =  (size: Size2d) => void;
+type onSizeChanged = (size: Size2d) => void;
 
-export class SceneContext {    
-    _onSizeChanges: onSizeChanged[];
-    _camera: THREE.Camera | undefined;
-    _size: Size2d = { width: 1, height: 1 };
+export class SceneContext {
+	_onSizeChanges: onSizeChanged[];
+	_camera: THREE.Camera | undefined;
+	_size: Size2d = { width: 1, height: 1 };
 
+	constructor(public readonly scene: THREE.Scene) {
+		this._onSizeChanges = [];
+	}
 
-    constructor(
-        public readonly scene: THREE.Scene) {
+	public get camera(): THREE.Camera {
+		if (!this._camera) throw new Error('Camera has not been initialized');
 
-        this._onSizeChanges = [];
-    }
+		return this._camera;
+	}
 
-    public get camera(): THREE.Camera {
-        if (!this._camera) throw new Error("Camera has not been initialized");
+	public set camera(value: THREE.Camera) {
+		this._camera = value;
 
-        return this._camera;
-    }
+		this.changeSize(this._size);
+	}
 
-    public set camera(value: THREE.Camera) {
-        this._camera = value;
+	public get hasCamera(): boolean {
+		return !!this._camera;
+	}
 
-        this.changeSize(this._size)
-    }
+	public changeSize(size: Size2d) {
+		this._size = size;
 
-    public get hasCamera(): boolean {
-        return !!this._camera;
-    }
+		this._onSizeChanges.forEach((callBack) => callBack(size));
+	}
 
-    public changeSize(size: Size2d) {
-        this._size = size;
+	public subscribeToSizeChange(callBack: onSizeChanged) {
+		this._onSizeChanges = [...this._onSizeChanges, callBack];
+	}
 
-        this._onSizeChanges.forEach(callBack => callBack(size));
-    }
-
-    public subscribeToSizeChange(callBack: onSizeChanged) {
-        this._onSizeChanges = [ ... this._onSizeChanges, callBack ];
-    }
-    
-    public unsubscribeToSizeChange(callBack: onSizeChanged) {
-        this._onSizeChanges = this._onSizeChanges.filter(cb => cb !== callBack);
-    }
+	public unsubscribeToSizeChange(callBack: onSizeChanged) {
+		this._onSizeChanges = this._onSizeChanges.filter((cb) => cb !== callBack);
+	}
 }
-

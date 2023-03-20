@@ -1,13 +1,18 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
-export interface LatLng { lat: number, lng: number };
+export interface LatLng {
+	lat: number;
+	lng: number;
+}
 
 export interface Aircraft {
-    start: LatLng;
+    id: string;
     
-    bearing: number;
-    altitude: number;
+	start: LatLng;
 
-    velocity: number;
-    distanceTraveled: number;   
+	bearing: number;
+	altitude: number;
+
+	velocity: number;
+	distanceTraveled: number;
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { key, SceneContext } from '$lib/sceneGraph/contexts/sceneContext';
 	import { onMount, setContext } from 'svelte';
 	import * as THREE from 'three';
+	import { key, SceneContext } from '$lib/sceneGraph/contexts/sceneContext';
 	import { ParentContext, parentContextkey } from '../contexts/parentContext';
 
 	let container: HTMLElement;
@@ -32,6 +32,8 @@
 	};
 
 	const onResize = () => {
+		if (!container) return;
+
 		renderer.setSize(container.clientWidth, container.clientHeight);
 		sceneContext.changeSize({ width: container.clientWidth, height: container.clientHeight });
 	};

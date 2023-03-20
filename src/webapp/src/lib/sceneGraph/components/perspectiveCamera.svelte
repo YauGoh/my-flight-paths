@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { key, SceneContext } from '$lib/sceneGraph/contexts/sceneContext';
 	import { getContext } from 'svelte';
 	import * as THREE from 'three';
+	import { key, SceneContext } from '$lib/sceneGraph/contexts/sceneContext';
+	import { parentContextkey, type ParentContext } from '../contexts/parentContext';
 	import type { Size2d } from '../models/size';
 	import type { Vector3d } from '../models/vector';
 
 	const sceneContext = getContext<SceneContext>(key);
+	const parentContext = getContext<ParentContext>(parentContextkey);
 
 	export let fieldOfView: number = 75;
 
@@ -25,7 +27,9 @@
 		near,
 		far
 	);
+
 	camera.position.set(position.x, position.y, position.z);
+	parentContext.add(camera);
 
 	sceneContext.camera = camera;
 	sceneContext.subscribeToSizeChange(onSizeChanged);

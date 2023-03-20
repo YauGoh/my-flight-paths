@@ -1,5 +1,5 @@
 export interface PlantContext {
-    radius: number
+	radius: number;
 }
 
-export const plantContextKey = "PlanetContext";
+export const plantContextKey = 'PlanetContext';

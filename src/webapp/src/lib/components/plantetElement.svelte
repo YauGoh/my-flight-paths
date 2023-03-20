@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { setContext } from 'svelte';
 	import { type PlantContext, plantContextKey } from '$lib/contexts/planetContext';
 	import Sphere from '$lib/sceneGraph/components/sphere.svelte';
-	import { setContext } from 'svelte';
 
 	export let radius: number;
 

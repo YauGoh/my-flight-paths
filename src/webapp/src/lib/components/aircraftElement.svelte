@@ -1,19 +1,39 @@
 <script lang="ts">
+	import { createEventDispatcher, getContext, onDestroy, onMount } from 'svelte';
+	import { type PlantContext, plantContextKey } from '$lib/contexts/planetContext';
 	import type { Aircraft } from '$lib/models/aircraft';
+	import Cone from '../sceneGraph/components/cone.svelte';
 	import Group from '../sceneGraph/components/group.svelte';
 	import { getArcAngle, toRadians } from '../sceneGraph/utils/maths';
-	import Cone from '../sceneGraph/components/cone.svelte';
-	import { getContext } from 'svelte';
-	import { type PlantContext, plantContextKey } from '$lib/contexts/planetContext';
 
 	export let aircraft: Aircraft;
 
-	let plantContext = getContext<PlantContext>(plantContextKey);
+	const dispatchEvent = createEventDispatcher();
+
+	const plantContext = getContext<PlantContext>(plantContextKey);
 	let radiusOfPlanet = plantContext.radius;
+	let isAnimating = true;
 
 	$: onPlantRadiusChanged(plantContext.radius);
 
 	const onPlantRadiusChanged = (radius: number) => (radiusOfPlanet = radius);
+
+	let lastAnimationRequestId: number = 0;
+	onMount(() => {
+		requestAnimationFrame(onAnimate);
+	});
+
+	const onAnimate = (timeStamp: number) => {
+		dispatchEvent('animate', timeStamp);
+
+		if (isAnimating) lastAnimationRequestId = requestAnimationFrame(onAnimate);
+	};
+
+	onDestroy(() => {
+		isAnimating = false;
+
+		if (lastAnimationRequestId) cancelAnimationFrame(lastAnimationRequestId);
+	});
 </script>
 
 <Group rotation={{ x: 0, y: toRadians(aircraft.start.lng), z: 0 }}>
@@ -21,8 +41,8 @@
 		<Group rotation={{ x: 0, y: toRadians(aircraft.bearing), z: 0 }}>
 			<Group
 				rotation={{
-					x: 0,
-					y: getArcAngle(radiusOfPlanet + aircraft.altitude, aircraft.distanceTraveled),
+					x: -1 * getArcAngle(radiusOfPlanet + aircraft.altitude, aircraft.distanceTraveled),
+					y: 0,
 					z: 0
 				}}
 			>
