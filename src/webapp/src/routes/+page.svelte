@@ -35,6 +35,7 @@
 			.filter((flight) => flight.trueTrack)
 			.filter((flight) => flight.longitude)
 			.filter((flight) => flight.latitude)
+			.slice(0, 10)
 			.map((flight) => ({
 				id: flight.icao24,
 				callSign: flight.callsign,
