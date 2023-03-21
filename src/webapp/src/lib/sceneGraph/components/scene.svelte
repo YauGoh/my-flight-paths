@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { onMount, setContext } from 'svelte';
+	import { createEventDispatcher, onDestroy, onMount, setContext } from 'svelte';
 	import * as THREE from 'three';
 	import { key, SceneContext } from '$lib/sceneGraph/contexts/sceneContext';
 	import { ParentContext, parentContextkey } from '../contexts/parentContext';
 
+	let animationRequestId: number = 0;
 	let container: HTMLElement;
 	let canvas: HTMLCanvasElement;
+
+	const dispatchEvent = createEventDispatcher();
 
 	const scene: THREE.Scene = new THREE.Scene();
 	const sceneContext = new SceneContext(scene);
@@ -19,14 +22,16 @@
 		renderer = new THREE.WebGLRenderer({ antialias: false, canvas });
 
 		onResize();
-		animate();
+		animationRequestId = requestAnimationFrame(animate);
 
 		resizeObserver = new ResizeObserver(onResize);
 		resizeObserver.observe(container);
 	});
 
-	const animate = () => {
-		requestAnimationFrame(animate);
+	const animate = (timeStamp: number) => {
+		animationRequestId = requestAnimationFrame(animate);
+
+		dispatchEvent('animate', timeStamp);
 
 		if (sceneContext.hasCamera) renderer.render(scene, sceneContext.camera);
 	};
@@ -37,6 +42,10 @@
 		renderer.setSize(container.clientWidth, container.clientHeight);
 		sceneContext.changeSize({ width: container.clientWidth, height: container.clientHeight });
 	};
+
+	onDestroy(() => {
+		if (animationRequestId) cancelAnimationFrame(animationRequestId);
+	});
 </script>
 
 <div bind:this={container} class="scene">

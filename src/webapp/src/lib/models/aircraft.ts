@@ -7,7 +7,7 @@ export interface LatLng {
 
 export interface Aircraft {
     id: string;
-    
+    callSign: string,
 	start: LatLng;
 
 	bearing: number;

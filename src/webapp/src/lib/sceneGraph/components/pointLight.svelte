@@ -26,8 +26,6 @@
 
 	onDestroy(() => {
 		parentContext?.remove(pointLight);
-
-		console.log('>>>>>>>>>>>>>>>>>>>> REMOVED', pointLight);
 	});
 </script>
 
