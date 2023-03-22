@@ -15,8 +15,8 @@
 	/>
 </form>
 <ul class="search-results">
-	{#each $aircraftsState.searchResults as aircraft}
-		<li class="search-result__item">{aircraft.callSign}</li>
+	{#each $aircraftsState.searchResults as aircraftPosition}
+		<li class="search-result__item">{aircraftPosition.aircraft.callSign}</li>
 	{/each}
 </ul>
 

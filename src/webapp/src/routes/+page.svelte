@@ -18,7 +18,7 @@
 	const animation = new Animation();
 
 	onMount(async () => {
-		setUpdateTimeMultiplier(1000);
+		setUpdateTimeMultiplier(10000);
 		await initialiseAircrafts();
 	});
 
@@ -39,8 +39,8 @@
 	<PerspectiveCamera position={{ x: 0, y: 0, z: 19113000 }} near={10000000} far={30000000} />
 
 	<PlantetElement radius={earthRadius}>
-		{#each $aircraftsState.aircrafts as aircraft}
-			<Aircraft3dElement {aircraft} />
+		{#each $aircraftsState.aircraftPositions as aircraft}
+			<Aircraft3dElement aircraftPosition={aircraft} />
 		{/each}
 	</PlantetElement>
 </Scene>
