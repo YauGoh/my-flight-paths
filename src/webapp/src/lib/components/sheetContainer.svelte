@@ -1,10 +1,16 @@
 <script lang="ts">
-	import { sheetState } from '$lib/states/sheetState';
+	import { dismissTopSheet, sheetState } from '$lib/states/sheetState';
+
+	const onDismissClicked = () => dismissTopSheet();
 </script>
 
 <div class="sheet-container">
 	{#each $sheetState.stack as sheet}
 		<div class="sheet" class:sheet--hidden={!sheet.shown}>
+			<div class="sheet__header">
+				<h2 class="sheet__title">{sheet.title}</h2>
+				<button class="sheet__dismiss-button" on:click={onDismissClicked}>x</button>
+			</div>
 			<svelte:component this={sheet.component} {...sheet.props} />
 		</div>
 	{/each}
@@ -36,6 +42,18 @@
 
 		&--hidden {
 			transform: translateX(calc(100% + 2rem));
+		}
+
+		&__header {
+			display: flex;
+			flex-direction: row;
+		}
+
+		&__title {
+			flex: 1;
+		}
+
+		&__dismiss-button {
 		}
 	}
 </style>

@@ -2,63 +2,30 @@
 	import { onMount } from 'svelte';
 	import Aircraft3dElement from '$lib/components/aircraftElement.svelte';
 	import PlantetElement from '$lib/components/plantetElement.svelte';
-	import type { Aircraft } from '$lib/models/aircraft';
 	import { earthRadius } from '$lib/models/earth';
 	import AmbientLight from '$lib/sceneGraph/components/ambientLight.svelte';
 	import PerspectiveCamera from '$lib/sceneGraph/components/perspectiveCamera.svelte';
 	import PointLight from '$lib/sceneGraph/components/pointLight.svelte';
 	import Scene from '$lib/sceneGraph/components/scene.svelte';
-	import { getFlights } from '$lib/services/getFlights';
+	import {
+		aircraftsState,
+		initialiseAircrafts,
+		setUpdateTimeMultiplier,
+		updateAircrafts
+	} from '$lib/states/aircraftsState';
 	import { Animation } from '$lib/utils/animation';
 
 	const animation = new Animation();
 
-	let aircrafts: Aircraft[] = [];
-
-	let speed = 1000;
-	// 	{
-	// 		id: '1',
-	// 		altitude: 200000,
-	// 		bearing: 0,
-	// 		distanceTraveled: 0,
-	// 		start: { lat: 0, lng: 0 },
-	// 		velocity: 10000
-	// 	}
-	// ];
-
 	onMount(async () => {
-		const flights = await getFlights();
-
-		aircrafts = flights
-			.filter((flight) => flight.baroAltitude)
-			.filter((flight) => flight.velocity)
-			.filter((flight) => flight.trueTrack)
-			.filter((flight) => flight.longitude)
-			.filter((flight) => flight.latitude)
-			.slice(0, 10)
-			.map((flight) => ({
-				id: flight.icao24,
-				callSign: flight.callsign,
-				altitude: flight.baroAltitude!,
-				velocity: flight.velocity!,
-				bearing: flight.trueTrack!,
-				distanceTraveled: 0,
-				start: {
-					lng: flight.longitude!,
-					lat: flight.latitude!
-				}
-			}));
+		setUpdateTimeMultiplier(1000);
+		await initialiseAircrafts();
 	});
 
 	const onAnimateAircraft = (timeStamp: number) => {
-		const deltaSeconds = speed * animation.getDeltaSeconds(timeStamp);
+		const deltaSeconds = animation.getDeltaSeconds(timeStamp);
 
-		aircrafts = aircrafts.map((a) => {
-			return {
-				...a,
-				distanceTraveled: a.distanceTraveled + a.velocity * deltaSeconds
-			};
-		});
+		updateAircrafts(deltaSeconds);
 	};
 </script>
 
@@ -72,7 +39,7 @@
 	<PerspectiveCamera position={{ x: 0, y: 0, z: 19113000 }} near={10000000} far={30000000} />
 
 	<PlantetElement radius={earthRadius}>
-		{#each aircrafts as aircraft}
+		{#each $aircraftsState.aircrafts as aircraft}
 			<Aircraft3dElement {aircraft} />
 		{/each}
 	</PlantetElement>
