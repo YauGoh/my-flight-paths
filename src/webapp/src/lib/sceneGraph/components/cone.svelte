@@ -19,6 +19,10 @@
 	setContext(parentContextkey, new ParentContext(cone));
 
 	onDestroy(() => parentContext?.remove(cone));
+
+	$: {
+		cone.material.color.set(colour);
+	}
 </script>
 
 <slot />

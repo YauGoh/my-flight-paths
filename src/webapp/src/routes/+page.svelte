@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import Aircraft3dElement from '$lib/components/aircraftElement.svelte';
 	import PlantetElement from '$lib/components/plantetElement.svelte';
+	import TrackingCamera from '$lib/components/trackingCamera.svelte';
 	import { earthRadius } from '$lib/models/earth';
 	import AmbientLight from '$lib/sceneGraph/components/ambientLight.svelte';
 	import PerspectiveCamera from '$lib/sceneGraph/components/perspectiveCamera.svelte';
@@ -18,7 +19,6 @@
 	const animation = new Animation();
 
 	onMount(async () => {
-		setUpdateTimeMultiplier(10000);
 		await initialiseAircrafts();
 	});
 
@@ -36,11 +36,16 @@
 	<PointLight position={{ x: 30000000, y: 30000000, z: 30000000 }} />
 	<AmbientLight />
 
-	<PerspectiveCamera position={{ x: 0, y: 0, z: 19113000 }} near={10000000} far={30000000} />
+	<TrackingCamera lookAt={$aircraftsState.cameraPosition} />
+
+	<!-- <PerspectiveCamera position={{ x: 0, y: 0, z: 19113000 }} near={10000000} far={30000000} /> -->
 
 	<PlantetElement radius={earthRadius}>
-		{#each $aircraftsState.aircraftPositions as aircraft}
-			<Aircraft3dElement aircraftPosition={aircraft} />
+		{#each $aircraftsState.aircraftPositions as position}
+			<Aircraft3dElement
+				aircraftPosition={position}
+				isSelected={position === $aircraftsState.selectedAircraftPosition}
+			/>
 		{/each}
 	</PlantetElement>
 </Scene>

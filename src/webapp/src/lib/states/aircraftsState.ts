@@ -1,7 +1,7 @@
 import type { Aircraft, LatLng } from "$lib/models/aircraft";
 import { earthRadius } from "$lib/models/earth";
 import { getFlights } from "$lib/services/getFlights";
-import { toRadians } from "$lib/utils/maths";
+import { toDegrees, toRadians } from "$lib/utils/maths";
 import { get, writable, type Readable } from "svelte/store";
 
 export interface AircraftPosition {
@@ -13,13 +13,16 @@ export interface AircraftPosition {
 interface AircraftsState {
     updateTimeMultiplier: number,
     aircraftPositions: AircraftPosition[],
-    searchResults: AircraftPosition[]
+    searchResults: AircraftPosition[],
+    selectedAircraftPosition?: AircraftPosition;
+    cameraPosition: LatLng;
 }
 
 const defaultState: AircraftsState = {
     updateTimeMultiplier: 1,
     aircraftPositions: [],
     searchResults: [],
+    cameraPosition: { lat: 0, lng: 0 }
 }
 
 const state = writable<AircraftsState>(defaultState);
@@ -30,12 +33,12 @@ export const initialiseAircrafts = async () => {
     const flights = await getFlights();
 
 	const aircrafts: AircraftPosition[] = flights
-			.filter((flight) => flight.baroAltitude)
-			.filter((flight) => flight.velocity)
-			.filter((flight) => flight.trueTrack)
-			.filter((flight) => flight.longitude)
-			.filter((flight) => flight.latitude)
-			.slice(0, 1)
+			.filter((flight) => flight.baroAltitude !== null)
+			.filter((flight) => flight.velocity !== null)
+			.filter((flight) => flight.trueTrack !== null)
+			.filter((flight) => flight.longitude !== null)
+			.filter((flight) => flight.latitude !== null)
+			.slice(0, 100)    
 			.map((flight) => ({
                 currentPosition: {
                     lat: flight.latitude!,
@@ -70,24 +73,32 @@ export const updateAircrafts = (deltaSeconds: number) => {
             const bearingRadius = toRadians(position.aircraft.bearing);
             const start = position.aircraft.start;
 
-            const newlat = Math.asin(Math.sin(start.lat)* Math.cos(distance/earthRadius) + Math.cos(start.lat)* Math.sin(distance/earthRadius)* Math.cos(bearingRadius));
-            const newlng = start.lng + Math.atan2(
-                Math.sin(bearingRadius) * Math.sin(distance/earthRadius)*Math.cos(start.lat), 
-                Math.cos(distance/earthRadius) - Math.sin(start.lat) * Math.sin(newlat));
+            const newlat = Math.asin(Math.sin(toRadians(start.lat))* Math.cos(distance/earthRadius) + Math.cos(toRadians(start.lat))* Math.sin(distance/earthRadius)* Math.cos(bearingRadius));
+            const newlng = toRadians(start.lng) + Math.atan2(
+                Math.sin(bearingRadius) * Math.sin(distance/earthRadius)*Math.cos(toRadians(start.lat)), 
+                Math.cos(distance/earthRadius) - Math.sin(toRadians(start.lat)) * Math.sin(newlat));
 
-            position.currentPosition = { lat: newlat, lng: newlng };
+            position.currentPosition = { lat: toDegrees(newlat), lng: toDegrees(newlng) };
 
             return position;
-        })
+        }),
+
+        cameraPosition: rotateCameraToSelectedAircraft(deltaSeconds, s.cameraPosition, s.selectedAircraftPosition)
     }));
 }
 
 export const searchAircrafts = (searchText: string) => {
     state.update(s => ({
         ... s,
-        searchResults: applySearchFilter(searchText, s.aircraftPositions)
+        searchResults: applySearchFilter(searchText, s.aircraftPositions),
+
+        
     }))
-} 
+}
+
+export const selectAircraft = (aircraftPosition: AircraftPosition) => state.update(s => ({ 
+    ... s, 
+    selectedAircraftPosition: aircraftPosition }));
 
 const applySearchFilter = (searchText: string, aircraftPositions: AircraftPosition[]) =>
 { 
@@ -99,4 +110,46 @@ const applySearchFilter = (searchText: string, aircraftPositions: AircraftPositi
     }
 }
 
+const rotateCameraToSelectedAircraft = (deltaSeconds: number, cameraPosition: LatLng, selectedAircraftPosition: AircraftPosition | undefined): LatLng => {
+    if (!selectedAircraftPosition) return cameraPosition;
+
+    const newPosiition: LatLng = { ... cameraPosition };
+
+    if (newPosiition.lng < selectedAircraftPosition.currentPosition.lng)
+    {
+        newPosiition.lng += 90 * deltaSeconds;
+
+        if (newPosiition.lng > selectedAircraftPosition.currentPosition.lng)
+            newPosiition.lng = selectedAircraftPosition.currentPosition.lng;
+    }
+
+    if (newPosiition.lng > selectedAircraftPosition.currentPosition.lng)
+    {
+        newPosiition.lng -= 90 * deltaSeconds;
+
+        if (newPosiition.lng < selectedAircraftPosition.currentPosition.lng)
+            newPosiition.lng = selectedAircraftPosition.currentPosition.lng;
+    }
+
+    if (newPosiition.lat < selectedAircraftPosition.currentPosition.lat)
+    {
+        newPosiition.lat += 90 * deltaSeconds;
+
+        if (newPosiition.lat > selectedAircraftPosition.currentPosition.lat)
+            newPosiition.lat = selectedAircraftPosition.currentPosition.lat;
+    }
+
+    if (newPosiition.lat > selectedAircraftPosition.currentPosition.lat)
+    {
+        newPosiition.lat -= 90 * deltaSeconds;
+
+        if (newPosiition.lat < selectedAircraftPosition.currentPosition.lat)
+            newPosiition.lat = selectedAircraftPosition.currentPosition.lat;
+    }
+
+    return newPosiition;
+}
+
 export const aircraftsState: Readable<AircraftsState> = state;
+
+

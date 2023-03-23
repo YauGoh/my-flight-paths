@@ -1,7 +1,17 @@
 <script lang="ts">
-	import { aircraftsState, searchAircrafts } from '$lib/states/aircraftsState';
+	import {
+		aircraftsState,
+		searchAircrafts,
+		selectAircraft,
+		type AircraftPosition
+	} from '$lib/states/aircraftsState';
+	import LatLng from './latLng.svelte';
 
 	let searchText: string;
+
+	const onSelected = (aircraftPosition: AircraftPosition) => {
+		selectAircraft(aircraftPosition);
+	};
 
 	$: searchAircrafts(searchText);
 </script>
@@ -16,7 +26,10 @@
 </form>
 <ul class="search-results">
 	{#each $aircraftsState.searchResults as aircraftPosition}
-		<li class="search-result__item">{aircraftPosition.aircraft.callSign}</li>
+		<li class="search-result__item" on:click={() => onSelected(aircraftPosition)}>
+			<span>{aircraftPosition.aircraft.callSign}</span>
+			<LatLng latLng={aircraftPosition.currentPosition} />
+		</li>
 	{/each}
 </ul>
 
@@ -33,6 +46,7 @@
 
 	.search-results {
 		list-style: none;
+		cursor: pointer;
 
 		&__item {
 			&--selected {
