@@ -1,16 +1,16 @@
 import type { Aircraft, LatLng } from "$lib/models/aircraft";
 import { earthRadius } from "$lib/models/earth";
 import { getFlights } from "$lib/services/getFlights";
-import { toDegrees, toRadians } from "$lib/utils/maths";
+import { getNewLatLng, toDegrees, toRadians } from "$lib/utils/maths";
 import { get, writable, type Readable } from "svelte/store";
 
 export interface AircraftPosition {
     aircraft: Aircraft;
-    distanceTraveled: number;
     currentPosition: LatLng;
 }
 
 interface AircraftsState {
+    time: number,
     updateTimeMultiplier: number,
     aircraftPositions: AircraftPosition[],
     searchResults: AircraftPosition[],
@@ -19,7 +19,8 @@ interface AircraftsState {
 }
 
 const defaultState: AircraftsState = {
-    updateTimeMultiplier: 1,
+    time: 0,
+    updateTimeMultiplier: 1000,
     aircraftPositions: [],
     searchResults: [],
     cameraPosition: { lat: 0, lng: 0 }
@@ -33,12 +34,14 @@ export const initialiseAircrafts = async () => {
     const flights = await getFlights();
 
 	const aircrafts: AircraftPosition[] = flights
+            // Filter only filghts with useable flight data
 			.filter((flight) => flight.baroAltitude !== null)
 			.filter((flight) => flight.velocity !== null)
 			.filter((flight) => flight.trueTrack !== null)
 			.filter((flight) => flight.longitude !== null)
 			.filter((flight) => flight.latitude !== null)
-			.slice(0, 100)    
+            // only take the first 200 useable flights for performance
+			.slice(0, 200)
 			.map((flight) => ({
                 currentPosition: {
                     lat: flight.latitude!,
@@ -64,41 +67,34 @@ export const initialiseAircrafts = async () => {
 
 export const updateAircrafts = (deltaSeconds: number) => {
     
-    state.update(s => ({
-        ... s,
-        aircraftPositions: s.aircraftPositions.map(position => {
-            const distance = position.distanceTraveled + position.aircraft.velocity * s.updateTimeMultiplier * deltaSeconds;
-            position.distanceTraveled = distance;
-            
-            const bearingRadius = toRadians(position.aircraft.bearing);
-            const start = position.aircraft.start;
+    state.update(s => {
+        const time = s.time + (deltaSeconds * s.updateTimeMultiplier);
 
-            const newlat = Math.asin(Math.sin(toRadians(start.lat))* Math.cos(distance/earthRadius) + Math.cos(toRadians(start.lat))* Math.sin(distance/earthRadius)* Math.cos(bearingRadius));
-            const newlng = toRadians(start.lng) + Math.atan2(
-                Math.sin(bearingRadius) * Math.sin(distance/earthRadius)*Math.cos(toRadians(start.lat)), 
-                Math.cos(distance/earthRadius) - Math.sin(toRadians(start.lat)) * Math.sin(newlat));
+        return {
+            ... s,
+            time,
+            aircraftPositions: s.aircraftPositions.map(position => {
+                position.currentPosition = getNewLatLng(time, earthRadius + position.aircraft.altitude, position.aircraft.velocity, position.aircraft.bearing, position.aircraft.start);
 
-            position.currentPosition = { lat: toDegrees(newlat), lng: toDegrees(newlng) };
+                return position;
+            }),
 
-            return position;
-        }),
-
-        cameraPosition: rotateCameraToSelectedAircraft(deltaSeconds, s.cameraPosition, s.selectedAircraftPosition)
-    }));
+            cameraPosition: rotateCameraToSelectedAircraft(deltaSeconds, s.cameraPosition, s.selectedAircraftPosition)
+        }
+});
 }
 
 export const searchAircrafts = (searchText: string) => {
     state.update(s => ({
         ... s,
         searchResults: applySearchFilter(searchText, s.aircraftPositions),
-
-        
     }))
 }
 
 export const selectAircraft = (aircraftPosition: AircraftPosition) => state.update(s => ({ 
     ... s, 
-    selectedAircraftPosition: aircraftPosition }));
+    selectedAircraftPosition: aircraftPosition
+}));
 
 const applySearchFilter = (searchText: string, aircraftPositions: AircraftPosition[]) =>
 { 

@@ -10,6 +10,5 @@
 	$: setContext<PlantContext>(plantContextKey, { radius });
 </script>
 
-<Sphere {radius}>
-	<slot />
-</Sphere>
+<Sphere {radius} />
+<slot />
