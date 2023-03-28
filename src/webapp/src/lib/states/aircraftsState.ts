@@ -1,8 +1,10 @@
+import AircraftDetails from "$lib/components/aircraftDetails.svelte";
 import type { Aircraft, LatLng } from "$lib/models/aircraft";
 import { earthRadius } from "$lib/models/earth";
 import { getFlights } from "$lib/services/getFlights";
 import { getNewLatLng, toDegrees, toRadians } from "$lib/utils/maths";
 import { get, writable, type Readable } from "svelte/store";
+import { showSheet } from "./sheetState";
 
 export interface AircraftPosition {
     aircraft: Aircraft;
@@ -74,14 +76,19 @@ export const updateAircrafts = (deltaSeconds: number) => {
             ... s,
             time,
             aircraftPositions: s.aircraftPositions.map(position => {
-                position.currentPosition = getNewLatLng(time, earthRadius + position.aircraft.altitude, position.aircraft.velocity, position.aircraft.bearing, position.aircraft.start);
+                position.currentPosition = getNewLatLng(
+                    time, 
+                    earthRadius + position.aircraft.altitude, 
+                    position.aircraft.velocity, 
+                    position.aircraft.bearing, 
+                    position.aircraft.start);
 
                 return position;
             }),
 
             cameraPosition: rotateCameraToSelectedAircraft(deltaSeconds, s.cameraPosition, s.selectedAircraftPosition)
         }
-});
+    });
 }
 
 export const searchAircrafts = (searchText: string) => {
@@ -91,10 +98,14 @@ export const searchAircrafts = (searchText: string) => {
     }))
 }
 
-export const selectAircraft = (aircraftPosition: AircraftPosition) => state.update(s => ({ 
-    ... s, 
-    selectedAircraftPosition: aircraftPosition
-}));
+export const selectAircraft = (aircraftPosition: AircraftPosition) => { 
+    state.update(s => ({ 
+        ... s, 
+        selectedAircraftPosition: aircraftPosition
+    }));
+
+    showSheet(AircraftDetails, aircraftPosition.aircraft.callSign, { aircraftPosition });
+};
 
 const applySearchFilter = (searchText: string, aircraftPositions: AircraftPosition[]) =>
 { 
