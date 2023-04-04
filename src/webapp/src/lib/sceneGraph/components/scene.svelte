@@ -43,13 +43,22 @@
 		sceneContext.changeSize({ width: container.clientWidth, height: container.clientHeight });
 	};
 
+	const onPointerMove = (event: PointerEvent) => sceneContext.onPointerMove(event);
+
+	const onPointerUp = (event: PointerEvent) => sceneContext.onPointerClicked(event);
+
 	onDestroy(() => {
 		if (animationRequestId) cancelAnimationFrame(animationRequestId);
 	});
 </script>
 
 <div bind:this={container} class="scene">
-	<canvas class="scene__canvas" bind:this={canvas} />
+	<canvas
+		class="scene__canvas"
+		bind:this={canvas}
+		on:pointermove={onPointerMove}
+		on:pointerup={onPointerUp}
+	/>
 	<slot />
 </div>
 
