@@ -1,16 +1,13 @@
 <script lang="ts">
-	import { createEventDispatcher, getContext, onDestroy, setContext } from 'svelte';
+	import { getContext, onDestroy, setContext } from 'svelte';
 	import * as THREE from 'three';
 	import { ParentContext, parentContextkey } from '../contexts/parentContext';
-	import { PointerInteractableObject } from '../models/pointerInteractableObject';
 
 	export let radius: number = 0.0125;
 	export let height: number = 0.05;
 	export let segments: number = 3;
 
 	export let colour: number | string = 0xffff00;
-
-	const dispatchEvent = createEventDispatcher();
 
 	const geometry = new THREE.ConeGeometry(radius, height, segments);
 	const material = new THREE.MeshStandardMaterial({ color: colour });

@@ -26,6 +26,8 @@
 
 		resizeObserver = new ResizeObserver(onResize);
 		resizeObserver.observe(container);
+
+		sceneContext.setCanvas(canvas);
 	});
 
 	const animate = (timeStamp: number) => {

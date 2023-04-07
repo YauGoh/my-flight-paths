@@ -14,7 +14,7 @@
 	const parentContext = getContext<ParentContext>(parentContextkey);
 	parentContext.parent.add(pointerInteractable);
 
-	setContext<ParentContext>(parentContext, new ParentContext(pointerInteractable));
+	setContext<ParentContext>(parentContextkey, new ParentContext(pointerInteractable));
 
 	onDestroy(() => parentContext?.remove(pointerInteractable));
 </script>

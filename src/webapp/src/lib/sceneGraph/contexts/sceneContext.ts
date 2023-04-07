@@ -6,21 +6,30 @@ export const key: string = 'SceneContext';
 
 type onSizeChanged = (size: Size2d) => void;
 
+type IndexedInteractable = {
+	[key: string]: PointerInteractable
+};
+
 export class SceneContext {
+	_canvas: HTMLElement | undefined;
 	_onSizeChanges: onSizeChanged[];
 	_camera: THREE.Camera | undefined;
 	_size: Size2d = { width: 1, height: 1 };
 	_raycaster : THREE.Raycaster;
 	_intersections: THREE.Intersection[];
 
-	_hovered: PointerInteractable[];
+	_hovered: IndexedInteractable;
 
 	constructor(public readonly scene: THREE.Scene) {
 		this._raycaster = new THREE.Raycaster();
 		this._intersections = [];
-		this._hovered = [];
+		this._hovered = {};
 
 		this._onSizeChanges = [];
+	}
+
+	public setCanvas(canvas: HTMLElement) {
+		this._canvas = canvas;
 	}
 
 	public get camera(): THREE.Camera {
@@ -48,14 +57,25 @@ export class SceneContext {
 	public onPointerMove(pointerEvent: PointerEvent) {
 		if (!this._camera) return;
 
+		if (!this._canvas) return;
+
+		const canvasViewPortRect = this._canvas.getBoundingClientRect();
+
+		const pointerCanvas = {
+			x: pointerEvent.clientX - canvasViewPortRect.x,
+			y: pointerEvent.clientY - canvasViewPortRect.y
+		};
+
 		const pointer: THREE.Vector2 = new THREE.Vector2();
-		pointer.set((pointerEvent.clientX / this._size.width) * 2 - 1, -(pointerEvent.clientY / this._size.height) * 2 + 1);
+		pointer.set( (pointerCanvas.x / this._size.width) * 2 - 1, 
+					-(pointerCanvas.y / this._size.height) * 2 + 1);
 		this._raycaster.setFromCamera(pointer, this._camera);
 
 		this._intersections = this._raycaster.intersectObjects(this.scene.children, true);
 
-
-		let updatedHovered: PointerInteractable[] = []
+		const lastKeys = Object.keys(this._hovered);
+		const lastHovered = { ... this._hovered };
+		this._hovered = {};
 
 		this._intersections.forEach(intersect => {
 
@@ -63,17 +83,17 @@ export class SceneContext {
 
 			if (!pointerInteractable) return;
 
-			pointerInteractable.invoke("over", pointerEvent);
+			if (!lastKeys.includes(pointerInteractable.uuid))
+			{
+				pointerInteractable.invoke("over", pointerEvent);
+			}
 
-			updatedHovered.push(pointerInteractable);
+			this._hovered[pointerInteractable.uuid] = pointerInteractable;
 		});
 
-		this._hovered
-			.filter(existing => updatedHovered
-				.every(updated => updated.id !== existing.id))
-			.forEach(old => old.invoke('leave', pointerEvent));
-
-		this._hovered = updatedHovered;
+		lastKeys.forEach(key => {
+			if (!this._hovered[key]) lastHovered[key].invoke("leave", pointerEvent);
+		});
 	}
 
 	public onPointerClicked(pointerEvent: PointerEvent) {
