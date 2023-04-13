@@ -1,5 +1,5 @@
-import type { ComponentType, SvelteComponent, SvelteComponentTyped } from "svelte";
-import { writable, type Readable } from "svelte/store";
+import type { ComponentType } from "svelte";
+import { get, writable, type Readable } from "svelte/store";
 
 interface SheetInfo {
     shown: boolean;
@@ -34,47 +34,50 @@ export const showSheet = (component: ComponentType, title: string, props?: any) 
         stack: [ ...s.stack, sheetInfo ]
     }));
 
-    setTimeout(() => reveal());
+    setTimeout(() => reveal(sheetInfo));
 }
 
-export const dismissTopSheet = () => {
+export const getCurrentSheet = (): SheetInfo | undefined => {
+    const { stack } = get(state);
 
-    let top: SheetInfo | undefined = undefined;
+    if (stack.length === 0) return undefined;
+
+    return stack[stack.length - 1];
+}
+
+export const dismissCurrentSheet = () => {
+
+    const { stack } = get(state);
+
+    if (!stack.length) return;
+
+    let top: SheetInfo = stack[stack.length - 1];
+    dismissSheet(top);
+}
+
+export const dismissSheet = (sheet: SheetInfo) => {
+    sheet.shown = false;
 
     state.update(s => {
-        
-        if (!s.stack.length) return s;
-
-        top = s.stack[s.stack.length - 1];
-        top.shown = false;
-
         return {
             ... s,
             stack: [... s.stack]
         }
     });
 
-    // If there is something from the top, wait 1 second to give it a chance to animate away before
-    // cleaning it up
-    if (top) cleanUp(top);
+    //cleanUp(sheet);
 }
 
-const reveal = () => {
+const reveal = (sheet: SheetInfo) => {
+    sheet.shown = true;
+
     state.update(s => ({
         ... s,
-        stack: s.stack.map(sheet => {
-            if (sheet.shown) return sheet;
-
-            return {
-                ... sheet,
-                shown: true
-            }
-        })
+        stack: [... s.stack]
     }));
 }
 
-const cleanUp =(lastDismissed: SheetInfo) => {
-
+const cleanUp = async (lastDismissed: SheetInfo) => {
     // Wait 1 second to remove last dismissed sheet so it has a chance to animate away
     setTimeout(
         () => state.update(s => ({

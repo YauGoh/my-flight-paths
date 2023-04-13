@@ -2,7 +2,7 @@
 	import { getContext } from 'svelte';
 	import { type PlantContext, plantContextKey } from '$lib/contexts/planetContext';
 	import PointerInteractions from '$lib/sceneGraph/components/PointerInteractions.svelte';
-	import type { AircraftPosition } from '$lib/states/aircraftsState';
+	import { selectAircraft, type AircraftPosition } from '$lib/states/aircraftsState';
 	import Cone from '../sceneGraph/components/cone.svelte';
 	import SphericalTransform from './sphericalTransform.svelte';
 
@@ -18,7 +18,7 @@
 	const onPlantRadiusChanged = (radius: number) => (radiusOfPlanet = radius);
 
 	const onClick = () => {
-		console.log('Aircraft Clicked!!!:', aircraftPosition);
+		selectAircraft(aircraftPosition);
 	};
 
 	const onOver = () => {

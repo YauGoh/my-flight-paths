@@ -2,9 +2,9 @@ import AircraftDetails from "$lib/components/aircraftDetails.svelte";
 import type { Aircraft, LatLng } from "$lib/models/aircraft";
 import { earthRadius } from "$lib/models/earth";
 import { getFlights } from "$lib/services/getFlights";
-import { getNewLatLng, toDegrees, toRadians } from "$lib/utils/maths";
+import { getNewLatLng } from "$lib/utils/maths";
 import { get, writable, type Readable } from "svelte/store";
-import { showSheet } from "./sheetState";
+import { dismissCurrentSheet, dismissSheet, getCurrentSheet, showSheet } from "./sheetState";
 
 export interface AircraftPosition {
     aircraft: Aircraft;
@@ -104,6 +104,12 @@ export const selectAircraft = (aircraftPosition: AircraftPosition) => {
         selectedAircraftPosition: aircraftPosition
     }));
 
+    const currentSheet = getCurrentSheet();
+
+    if (currentSheet?.component.name === AircraftDetails.name) {
+        setTimeout(() => dismissSheet(currentSheet), 1000);
+    }
+    
     showSheet(AircraftDetails, aircraftPosition.aircraft.callSign, { aircraftPosition });
 };
 
@@ -158,5 +164,3 @@ const rotateCameraToSelectedAircraft = (deltaSeconds: number, cameraPosition: La
 }
 
 export const aircraftsState: Readable<AircraftsState> = state;
-
-

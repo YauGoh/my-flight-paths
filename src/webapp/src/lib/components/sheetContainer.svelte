@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { dismissTopSheet, sheetState } from '$lib/states/sheetState';
+	import { dismissCurrentSheet, sheetState } from '$lib/states/sheetState';
 
-	const onDismissClicked = () => dismissTopSheet();
+	const onDismissClicked = () => dismissCurrentSheet();
 </script>
 
 <div class="sheet-container">
