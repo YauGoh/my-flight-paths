@@ -4,7 +4,7 @@ import { earthRadius } from "$lib/models/earth";
 import { getFlights } from "$lib/services/getFlights";
 import { getNewLatLng } from "$lib/utils/maths";
 import { get, writable, type Readable } from "svelte/store";
-import { dismissCurrentSheet, dismissSheet, getCurrentSheet, showSheet } from "./sheetState";
+import { dismissSheet, getCurrentSheet, showSheet } from "./sheetState";
 
 export interface AircraftPosition {
     aircraft: Aircraft;

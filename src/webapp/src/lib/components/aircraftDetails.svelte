@@ -5,33 +5,48 @@
 
 {#if $aircraftsState?.selectedAircraftPosition}
 	<form>
-		<label>
-			ICAO 24
-			<input value={$aircraftsState.selectedAircraftPosition.aircraft.id} />
-		</label>
-		<label>
-			Call Sign
-			<input value={$aircraftsState.selectedAircraftPosition.aircraft.callSign} />
-		</label>
+		<div class="form-group">
+			<label>
+				ICAO 24
+				<input value={$aircraftsState.selectedAircraftPosition.aircraft.id} />
+			</label>
+		</div>
 
-		<label>
-			Start posiition
-			<span><LatLng latLng={$aircraftsState.selectedAircraftPosition.aircraft.start} /></span>
-		</label>
+		<div class="form-group">
+			<label>
+				Call Sign
+				<input value={$aircraftsState.selectedAircraftPosition.aircraft.callSign} />
+			</label>
+		</div>
 
-		<label>
-			Bearing
-			<input value={$aircraftsState.selectedAircraftPosition.aircraft.bearing} />
-		</label>
+		<div class="form-group">
+			<label>
+				Start posiition
+				<span><LatLng latLng={$aircraftsState.selectedAircraftPosition.aircraft.start} /></span>
+			</label>
+		</div>
 
-		<label>
-			Velocity
-			<input value={$aircraftsState.selectedAircraftPosition.aircraft.velocity} />
-		</label>
+		<div class="form-group">
+			<label>
+				Bearing
+				<input value={$aircraftsState.selectedAircraftPosition.aircraft.bearing} />
+			</label>
+		</div>
 
-		<label>
-			Current posiition
-			<span><LatLng bind:latLng={$aircraftsState.selectedAircraftPosition.currentPosition} /></span>
-		</label>
+		<div class="form-group">
+			<label>
+				Velocity
+				<input value={$aircraftsState.selectedAircraftPosition.aircraft.velocity} />
+			</label>
+		</div>
+
+		<div class="form-group">
+			<label>
+				Current posiition
+				<span
+					><LatLng bind:latLng={$aircraftsState.selectedAircraftPosition.currentPosition} /></span
+				>
+			</label>
+		</div>
 	</form>
 {/if}

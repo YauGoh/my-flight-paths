@@ -32,13 +32,16 @@
 
 		margin: 1rem;
 
+		transition: transform ease-in 0.25s;
+		transform: translateX(0);
+
 		width: 25vw;
 		max-width: 768px;
 
-		background: white;
+		padding: 1rem;
 
-		transition: transform ease-in 0.25s;
-		transform: translateX(0);
+		background: black;
+		border: 1px solid green;
 
 		&--hidden {
 			transform: translateX(calc(100% + 2rem));
@@ -51,9 +54,19 @@
 
 		&__title {
 			flex: 1;
+			margin: 0;
+			color: green;
 		}
 
 		&__dismiss-button {
+			border: none;
+			outline: none;
+
+			width: 2rem;
+			height: 2rem;
+			color: green;
+
+			background: transparent;
 		}
 	}
 </style>
