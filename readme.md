@@ -9,3 +9,5 @@ Each aircraft flight path is obtained using a mocked response from the [OpenSky 
 The aircraft state is stored using Svelte's writeable stores. The javascript api call requestAnimationFrame is used to update the position of each aircraft in the store. We bind the aircraft position element's properties in our 3d scene graph to animate them.
 
 Each scene graph element also responds to pointer events, ie. Hovering over an Aircraft will change it's colour, clicking on an Aircraft will select the airacrft and display some details about the aircraft. If will also trigger the camera to start tracking the aircraft.
+
+[Checkout the Working Demo](https://yaugoh.github.io/my-flight-paths/).
