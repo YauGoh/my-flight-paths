@@ -43,6 +43,9 @@
 		background: black;
 		border: 1px solid green;
 
+		display: flex;
+		flex-direction: column;
+
 		&--hidden {
 			transform: translateX(calc(100% + 2rem));
 		}

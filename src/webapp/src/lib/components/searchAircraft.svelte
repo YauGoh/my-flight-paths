@@ -26,7 +26,12 @@
 </form>
 <ul class="search-results">
 	{#each $aircraftsState.searchResults as aircraftPosition}
-		<li class="search-result__item" on:click={() => onSelected(aircraftPosition)}>
+		<li
+			class="search-result__item"
+			on:click={() => onSelected(aircraftPosition)}
+			class:search-results__item--selected={aircraftPosition ===
+				$aircraftsState.selectedAircraftPosition}
+		>
 			<span>{aircraftPosition.aircraft.callSign}</span>
 			<LatLng latLng={aircraftPosition.currentPosition} />
 		</li>
@@ -45,12 +50,20 @@
 	}
 
 	.search-results {
+		padding: 0;
 		list-style: none;
 		cursor: pointer;
+		height: 100%;
+
+		overflow-y: auto;
 
 		&__item {
 			&--selected {
-				font-weight: bold;
+				background: green;
+
+				:global(*) {
+					color: black !important;
+				}
 			}
 		}
 	}

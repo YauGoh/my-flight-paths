@@ -37,6 +37,22 @@ export const showSheet = (component: ComponentType, title: string, props?: any) 
     setTimeout(() => reveal(sheetInfo));
 }
 
+export const popAllThenShowSheet = (component: ComponentType, title: string, props?: any) => {
+    const sheetInfo: SheetInfo = {
+        shown: false,
+        component,
+        title,
+        props
+    };
+
+    state.update(s => ({
+        ... s,
+        stack: [ ...s.stack.map(sheet => ({... sheet, shown: false})), sheetInfo ]
+    }));
+
+    setTimeout(() => reveal(sheetInfo));
+}
+
 export const getCurrentSheet = (): SheetInfo | undefined => {
     const { stack } = get(state);
 

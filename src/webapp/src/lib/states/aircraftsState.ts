@@ -3,8 +3,9 @@ import type { Aircraft, LatLng } from "$lib/models/aircraft";
 import { earthRadius } from "$lib/models/earth";
 import { getFlights } from "$lib/services/getFlights";
 import { getNewLatLng } from "$lib/utils/maths";
-import { get, writable, type Readable } from "svelte/store";
-import { dismissSheet, getCurrentSheet, showSheet } from "./sheetState";
+import { writable, type Readable } from "svelte/store";
+import { dismissSheet, getCurrentSheet, popAllThenShowSheet, showSheet } from "./sheetState";
+import SearchAircraft from '$lib/components/searchAircraft.svelte';
 
 export interface AircraftPosition {
     aircraft: Aircraft;
@@ -96,6 +97,10 @@ export const searchAircrafts = (searchText: string) => {
         ... s,
         searchResults: applySearchFilter(searchText, s.aircraftPositions),
     }))
+}
+
+export const showAircraftSearch = () => {
+    popAllThenShowSheet(SearchAircraft, 'Search');
 }
 
 export const selectAircraft = (aircraftPosition: AircraftPosition) => { 
