@@ -8,16 +8,16 @@
 		<link href="./_app/immutable/assets/_layout.2fa7539c.css" rel="stylesheet">
 		<link href="./_app/immutable/assets/searchAircraft.550a5ad2.css" rel="stylesheet">
 		<link href="./_app/immutable/assets/_page.5b2890d1.css" rel="stylesheet">
-		<link rel="modulepreload" href="./_app/immutable/entry/start.72612933.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/start.f594fe5c.js">
 		<link rel="modulepreload" href="./_app/immutable/chunks/index.83320916.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/singletons.ca2b4925.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/singletons.2c5d268b.js">
 		<link rel="modulepreload" href="./_app/immutable/chunks/index.4b11e5be.js">
-		<link rel="modulepreload" href="./_app/immutable/entry/app.b05a7365.js">
-		<link rel="modulepreload" href="./_app/immutable/entry/_layout.svelte.181cad0e.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/searchAircraft.svelte_svelte_type_style_lang.f98c96c8.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.1f8efa08.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/_layout.svelte.23d6c2f8.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/searchAircraft.svelte_svelte_type_style_lang.caaa72a8.js">
 		<link rel="modulepreload" href="./_app/immutable/entry/_layout.js.984db11e.js">
 		<link rel="modulepreload" href="./_app/immutable/chunks/_layout.da46b06b.js">
-		<link rel="modulepreload" href="./_app/immutable/entry/_page.svelte.621a916d.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/_page.svelte.10a95a0f.js">
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">
@@ -28,31 +28,11 @@
 	<p>A simple Svelte wrapper on the popular
 		<a href="https://threejs.org/">Three.js 3D Javascript library</a>.
 	</p>
-	<p>My hack-a-thon idea hopes to demonstrate a declarative approach to building a 3D scene using
-		Svelte bindings to manipulate the objects and transformations of the scene. The simple scene
-		consists of a sphere to represent the Planet Earth; and transformations and cones to represent
-		aircrafts and their flight current flight paths.
+	<p>The shrere is our planet Earth. Each moving cone represents a moving Aircraft, time has been
+		sped up so we can see movement.
 	</p>
-	<p>The lib\sceneGraph folder contains the simple Svelte wrapper against the Three.js 3D Javascript
-		library. We start with the Scene context and we add Transformations (Groups); Shapes; Lights and
-		Cameras elements as nested elements to our Scene. We can also build higher level components by
-		composition and add those components to our Scene, see aircraftElement.svelte;
-		planetElement.svelte and sphericalTransformation.svelte in the lib\copmonents folder.
-	</p>
-	<p>Each aircraft flight path is obtained using a mocked response from the <a href="https://opensky-network.org">OpenSky Network.</a> For more details checkout Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic
-		and Matthias Wilhelm: &quot;Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research&quot;. In
-		Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks
-		(IPSN), pages 83-94, April 2014. The response from the Opensky Api gives use useful information we
-		can use to animate the movement of all returned aircrafts, including their starting position, altitude,
-		direction they are facing, and speed they are travelling.
-	</p>
-	<p>The aircraft state is stored using Svelte&#39;s writeable stores. The javascript api call
-		requestAnimationFrame is used to update the position of each aircraft in the store. We bind the
-		aircraft position element&#39;s properties in our 3d scene graph to animate them.
-	</p>
-	<p>Each scene graph element also responds to pointer events, ie. Hovering over an Aircraft will
-		change it&#39;s colour, clicking on an Aircraft will select the airacrft and display some details
-		about the aircraft. If will also trigger the camera to start tracking the aircraft.
+	<p>Try clicking on the each Aircraft to get it&#39;s details. Click on the search button to find an
+		aircraft.
 	</p>
 	<div class="layout__body svelte-457flo"><div class="scene svelte-1tsryj5"><canvas class="scene__canvas svelte-1tsryj5"></canvas>
 	
@@ -76,7 +56,7 @@
 			
 			<script>
 				{
-					__sveltekit_od69p7 = {
+					__sveltekit_2jg4ho = {
 						env: {},
 						base: new URL(".", location).pathname.slice(0, -1),
 						element: document.currentScript.parentElement
@@ -85,10 +65,10 @@
 					const data = [null,null];
 
 					Promise.all([
-						import("./_app/immutable/entry/start.72612933.js"),
-						import("./_app/immutable/entry/app.b05a7365.js")
+						import("./_app/immutable/entry/start.f594fe5c.js"),
+						import("./_app/immutable/entry/app.1f8efa08.js")
 					]).then(([kit, app]) => {
-						kit.start(app, __sveltekit_od69p7.element, {
+						kit.start(app, __sveltekit_2jg4ho.element, {
 							node_ids: [0, 2],
 							data,
 							form: null,
