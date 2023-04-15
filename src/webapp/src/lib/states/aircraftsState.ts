@@ -112,7 +112,7 @@ export const selectAircraft = (aircraftPosition: AircraftPosition) => {
     const currentSheet = getCurrentSheet();
 
     if (currentSheet?.component.name === AircraftDetails.name) {
-        setTimeout(() => dismissSheet(currentSheet), 1000);
+        dismissSheet(currentSheet);
     }
     
     showSheet(AircraftDetails, aircraftPosition.aircraft.callSign, { aircraftPosition });

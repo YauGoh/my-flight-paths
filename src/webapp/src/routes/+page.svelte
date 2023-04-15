@@ -35,8 +35,6 @@
 
 	<TrackingCamera lookAt={$aircraftsState.cameraPosition} />
 
-	<!-- <PerspectiveCamera position={{ x: 0, y: 0, z: 19113000 }} near={10000000} far={30000000} /> -->
-
 	<PlantetElement radius={earthRadius}>
 		{#each $aircraftsState.aircraftPositions as position}
 			<Aircraft3dElement

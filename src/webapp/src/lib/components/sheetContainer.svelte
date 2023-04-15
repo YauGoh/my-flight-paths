@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { dismissCurrentSheet, sheetState } from '$lib/states/sheetState';
-
-	const onDismissClicked = () => dismissCurrentSheet();
+	import { dismissSheet, sheetState } from '$lib/states/sheetState';
 </script>
 
 <div class="sheet-container">
@@ -9,7 +7,7 @@
 		<div class="sheet" class:sheet--hidden={!sheet.shown}>
 			<div class="sheet__header">
 				<h2 class="sheet__title">{sheet.title}</h2>
-				<button class="sheet__dismiss-button" on:click={onDismissClicked}>x</button>
+				<button class="sheet__dismiss-button" on:click={() => dismissSheet(sheet)}>x</button>
 			</div>
 			<svelte:component this={sheet.component} {...sheet.props} />
 		</div>

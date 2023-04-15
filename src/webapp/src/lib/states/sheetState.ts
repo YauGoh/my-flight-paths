@@ -56,18 +56,18 @@ export const popAllThenShowSheet = (component: ComponentType, title: string, pro
 export const getCurrentSheet = (): SheetInfo | undefined => {
     const { stack } = get(state);
 
-    if (stack.length === 0) return undefined;
+    const displayedSheets = stack.filter(sheet => sheet.shown);
 
-    return stack[stack.length - 1];
+    if (displayedSheets.length === 0) return undefined;
+
+    return displayedSheets[displayedSheets.length - 1];
 }
 
 export const dismissCurrentSheet = () => {
+    const top: SheetInfo | undefined = getCurrentSheet();
 
-    const { stack } = get(state);
+    if (!top) return
 
-    if (!stack.length) return;
-
-    let top: SheetInfo = stack[stack.length - 1];
     dismissSheet(top);
 }
 
